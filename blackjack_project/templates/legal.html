@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mentions Légales - Blackjack Sécurisé{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-4 mb-5">
+        <div class="card-header">
+            <h2 class="card-title">Mentions Légales et Politique de Confidentialité</h2>
+        </div>
+        <div class="card-body">
+            <h3>1. Éditeur du site</h3>
+            <p>
+                <strong>Nom:</strong> Blackjack Sécurisé<br>
+                <strong>Adresse:</strong> 123 Rue de la Sécurité, 75000 Paris, France<br>
+                <strong>Email:</strong> contact@blackjack-securise.fr
+            </p>
+
+            <h3 class="mt-4">2. Données personnelles collectées</h3>
+            <p>
+                Nous collectons exclusivement les données suivantes lors de votre inscription:
+            </p>
+            <ul>
+                <li><strong>Email:</strong> Pour l'authentification et la récupération de compte</li>
+                <li><strong>Mot de passe:</strong> Pour sécuriser votre compte (hachage bcrypt)</li>
+                <li><strong>Nom:</strong> Pour personnaliser votre expérience</li>
+            </ul>
+
+            <h3 class="mt-4">3. Utilisation des données</h3>
+            <p>
+                Vos données personnelles sont utilisées pour:
+            </p>
+            <ul>
+                <li>Créer et gérer votre compte utilisateur</li>
+                <li>Vous permettre de jouer au blackjack</li>
+                <li>Vous contacter en cas de problème sur votre compte</li>
+            </ul>
+
+            <h3 class="mt-4">4. Sécurité</h3>
+            <p>
+                Vos mots de passe sont hachés avec <strong>bcrypt</strong> (algorithme cryptographique sécurisé).
+                Tous les accès au site utilisent <strong>HTTPS</strong> pour chiffrer vos données en transit.
+            </p>
+
+            <h3 class="mt-4">5. Conservation des données</h3>
+            <p>
+                Vos données sont conservées aussi longtemps que votre compte est actif.
+                Vous pouvez à tout moment demander la suppression de votre compte et de vos données.
+            </p>
+
+            <h3 class="mt-4">6. Vos droits</h3>
+            <p>
+                Conformément au RGPD, vous avez le droit de:
+            </p>
+            <ul>
+                <li><strong>Accéder</strong> à vos données personnelles</li>
+                <li><strong>Rectifier</strong> vos données inexactes</li>
+                <li><strong>Supprimer</strong> votre compte et vos données ("droit à l'oubli")</li>
+                <li><strong>Porter</strong> vos données vers un autre service</li>
+                <li><strong>Vous opposer</strong> au traitement de vos données</li>
+            </ul>
+
+            <p class="mt-3">
+                Pour exercer ces droits, contactez-nous à: <strong>contact@blackjack-securise.fr</strong>
+            </p>
+
+            <h3 class="mt-4">7. Cookies</h3>
+            <p>
+                Nous utilisons uniquement des cookies de session pour:
+            </p>
+            <ul>
+                <li>Vous maintenir connecté(e) à votre compte</li>
+                <li>Protéger contre les attaques CSRF</li>
+            </ul>
+
+            <h3 class="mt-4">8. Consentement</h3>
+            <p>
+                En créant un compte, vous consentez à la collecte et l'utilisation de vos données
+                comme décrit dans cette politique.
+            </p>
+
+            <h3 class="mt-4">9. Contact</h3>
+            <p>
+                Pour toute question concernant vos données personnelles, écrivez à:
+                <strong>contact@blackjack-securise.fr</strong>
+            </p>
+
+            <hr class="my-5">
+            <p class="text-muted text-center">
+                Dernière mise à jour: 5 Décembre 2024
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

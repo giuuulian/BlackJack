@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blackjack - Jouer{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 offset-lg-2">
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2 class="card-title">♠️ Blackjack</h2>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+
+                <!-- Game Area -->
+                <div id="gameArea">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-dark text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Croupier</h5>
+                                    <div id="dealerHand" class="mb-3 d-flex gap-2" style="min-height: 100px;">
+                                        <!-- Dealer cards will be displayed here -->
+                                    </div>
+                                    <p>Score: <span id="dealerScore">0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-dark text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Vous</h5>
+                                    <div id="playerHand" class="mb-3 d-flex gap-2" style="min-height: 100px;">
+                                        <!-- Player cards will be displayed here -->
+                                    </div>
+                                    <p>Score: <span id="playerScore">0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Status -->
+                    <div id="statusArea" class="mb-4"></div>
+
+                    <!-- Betting Section -->
+                    <div id="bettingSection" class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5>Solde: <span id="balance" class="text-success">1000</span> €</h5>
+                            <div class="mb-3">
+                                <label for="betAmount" class="form-label">Mise (en €):</label>
+                                <input type="number" id="betAmount" class="form-control" value="10" min="1" max="1000">
+                            </div>
+                            <button id="startBtn" class="btn btn-success btn-lg w-100">
+                                Commencer une partie
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div id="actionButtons" class="d-none">
+                        <button id="hitBtn" class="btn btn-primary me-2">Tirer une carte</button>
+                        <button id="standBtn" class="btn btn-warning">Rester</button>
+                        <button id="newGameBtn" class="btn btn-success ms-2 d-none">Nouvelle partie</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentGameId = null;
+
+// Get CSRF token from cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+// Display cards
+function displayCards(containerId, cards, hideFirst = false) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    
+    cards.forEach((card, index) => {
+        if (hideFirst && index === 1) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card bg-secondary';
+            cardDiv.style.width = '60px';
+            cardDiv.innerHTML = '<div class="card-body p-2 text-center text-white"><small>?</small></div>';
+            container.appendChild(cardDiv);
+        } else {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card bg-white text-dark';
+            cardDiv.style.width = '60px';
+            cardDiv.innerHTML = `<div class="card-body p-2 text-center"><strong>${card}</strong></div>`;
+            container.appendChild(cardDiv);
+        }
+    });
+}
+
+// Start game
+document.getElementById('startBtn').addEventListener('click', async () => {
+    const betAmount = parseInt(document.getElementById('betAmount').value);
+    
+    if (betAmount < 1 || betAmount > 1000) {
+        alert('Mise invalide');
+        return;
+    }
+    
+    try {
+        const response = await fetch('{% url "blackjack_app:api_start_game" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({ bet_amount: betAmount })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            alert('Erreur: ' + data.error);
+            return;
+        }
+        
+        currentGameId = data.game_id;
+        updateGame(data);
+        
+        // Show action buttons, hide start button
+        document.getElementById('bettingSection').classList.add('d-none');
+        document.getElementById('actionButtons').classList.remove('d-none');
+        document.getElementById('newGameBtn').classList.add('d-none');
+        
+        // Update balance
+        document.getElementById('balance').textContent = data.balance;
+        
+        // Check for immediate win
+        if (data.status === 'win') {
+            displayCards('dealerHand', data.dealer_hand);
+            showStatus('Blackjack ! Vous avez gagné !', 'success');
+            document.getElementById('actionButtons').classList.add('d-none');
+            document.getElementById('newGameBtn').classList.remove('d-none');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur serveur');
+    }
+});
+
+// Hit button
+document.getElementById('hitBtn').addEventListener('click', async () => {
+    try {
+        const response = await fetch('{% url "blackjack_app:api_hit" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({ game_id: currentGameId })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            alert('Erreur: ' + data.error);
+            return;
+        }
+        
+        updateGame(data);
+        
+        if (data.status === 'loss') {
+            displayCards('dealerHand', []); // Hide dealer cards
+            showStatus('Vous avez dépassé 21. Vous avez perdu !', 'danger');
+            document.getElementById('actionButtons').classList.add('d-none');
+            document.getElementById('newGameBtn').classList.remove('d-none');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur serveur');
+    }
+});
+
+// Stand button
+document.getElementById('standBtn').addEventListener('click', async () => {
+    try {
+        const response = await fetch('{% url "blackjack_app:api_stand" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify({ game_id: currentGameId })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            alert('Erreur: ' + data.error);
+            return;
+        }
+        
+        updateGame(data);
+        
+        let message = '';
+        let alertClass = '';
+        
+        if (data.status === 'win') {
+            message = '✓ Vous avez gagné !';
+            alertClass = 'success';
+        } else if (data.status === 'loss') {
+            message = '✗ Vous avez perdu.';
+            alertClass = 'danger';
+        } else {
+            message = '= Égalité.';
+            alertClass = 'warning';
+        }
+        
+        showStatus(message, alertClass);
+        document.getElementById('actionButtons').classList.add('d-none');
+        document.getElementById('newGameBtn').classList.remove('d-none');
+        
+        // Display dealer cards
+        displayCards('dealerHand', data.dealer_hand);
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur serveur');
+    }
+});
+
+// New game button
+document.getElementById('newGameBtn').addEventListener('click', () => {
+    location.reload();
+});
+
+// Update game display
+function updateGame(data) {
+    displayCards('playerHand', data.player_hand);
+    displayCards('dealerHand', data.dealer_hand, data.status === 'active');
+    document.getElementById('playerScore').textContent = data.player_score;
+    document.getElementById('dealerScore').textContent = data.dealer_score;
+    document.getElementById('balance').textContent = data.balance;
+}
+
+// Show status message
+function showStatus(message, alertClass) {
+    const statusArea = document.getElementById('statusArea');
+    statusArea.innerHTML = `<div class="alert alert-${alertClass} alert-dismissible fade show" role="alert">
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>`;
+}
+</script>
+{% endblock %}

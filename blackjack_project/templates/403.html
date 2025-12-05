@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Accès Refusé - Blackjack Sécurisé{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card mt-5">
+            <div class="card-header bg-danger">
+                <h2 class="card-title text-white">403 - Accès Refusé</h2>
+            </div>
+            <div class="card-body">
+                <p>Vous n'avez pas les permissions nécessaires pour accéder à cette page.</p>
+                <a href="{% url 'blackjack_app:game' %}" class="btn btn-primary">
+                    Retour au jeu
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
