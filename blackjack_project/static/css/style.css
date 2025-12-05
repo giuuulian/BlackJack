@@ -1,4 +1,4 @@
-/* Blackjack Game Styles */
+
 
 :root {
     --primary-color: #2c3e50;
@@ -27,7 +27,6 @@ body {
     padding: 20px;
 }
 
-/* Navbar */
 .navbar {
     background-color: var(--primary-color);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
@@ -49,7 +48,7 @@ body {
     color: var(--secondary-color) !important;
 }
 
-/* Cards */
+
 .card {
     border: none;
     border-radius: 10px;
@@ -65,7 +64,6 @@ body {
     font-weight: bold;
 }
 
-/* Forms */
 .form-control {
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -84,7 +82,6 @@ body {
     margin-bottom: 8px;
 }
 
-/* Buttons */
 .btn {
     border-radius: 5px;
     font-weight: 500;
@@ -148,7 +145,6 @@ body {
     padding-bottom: 10px;
 }
 
-/* Cards Display */
 .cards-display {
     display: flex;
     flex-wrap: wrap;
@@ -195,7 +191,6 @@ body {
     background: linear-gradient(135deg, var(--warning-color), #e67e22);
 }
 
-/* Forms Styling */
 .form-container {
     max-width: 400px;
     margin: 50px auto;
@@ -230,7 +225,6 @@ body {
     height: 40px;
 }
 
-/* Error Messages */
 .alert-danger {
     background-color: #fadbd8;
     border: 1px solid var(--danger-color);
@@ -258,7 +252,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* Footer */
+
 footer {
     background-color: var(--primary-color);
     color: white;
@@ -276,7 +270,6 @@ footer a:hover {
     text-decoration: underline;
 }
 
-/* Checkbox */
 .form-check-input {
     width: 20px;
     height: 20px;
@@ -295,7 +288,6 @@ footer a:hover {
     user-select: none;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .container {
         padding: 10px;
@@ -349,7 +341,6 @@ footer a:hover {
     }
 }
 
-/* Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -365,7 +356,6 @@ footer a:hover {
     animation: fadeIn 0.3s ease;
 }
 
-/* Badge Styles */
 .badge {
     padding: 5px 10px;
     border-radius: 20px;
@@ -393,7 +383,6 @@ footer a:hover {
     color: white;
 }
 
-/* Table Styles */
 table {
     width: 100%;
     border-collapse: collapse;
