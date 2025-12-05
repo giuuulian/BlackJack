@@ -8,7 +8,6 @@ import django
 import subprocess
 from pathlib import Path
 
-# Setup Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blackjack_project.settings')
 django.setup()
 
@@ -41,10 +40,9 @@ def run_server():
     print("=" * 60 + "\n")
     
     try:
-        # Try to use django-extensions for HTTPS if available
         call_command('runserver_plus', 'localhost:8443', use_ssl=True)
     except:
-        # Fallback to standard runserver
+    
         print("Note: Pour HTTPS en développement, installez django-extensions:")
         print("  pip install django-extensions")
         print("\nUtilisation du serveur HTTP standard pour le moment...")

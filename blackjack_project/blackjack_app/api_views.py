@@ -9,7 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Card deck
+
 DECK = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 
 
@@ -34,7 +34,6 @@ def calculate_score(hand):
             aces += 1
         total += value
     
-    # Adjust for aces
     while total > 21 and aces > 0:
         total -= 10
         aces -= 1
@@ -74,11 +73,9 @@ def start_game(request):
         data = json.loads(request.body)
         bet_amount = int(data.get('bet_amount', 10))
         
-        # Validate bet
         if bet_amount < 1 or bet_amount > 1000:
             return JsonResponse({'error': 'Mise invalide'}, status=400)
         
-        # Get or create game session
         game_session = GameSession.objects.create(
             user=user,
             bet_amount=bet_amount,
@@ -86,17 +83,15 @@ def start_game(request):
             status='active',
         )
         
-        # Deal initial cards
         player_hand = [random.choice(DECK) for _ in range(2)]
         dealer_hand = [random.choice(DECK) for _ in range(2)]
         
         game_session.player_hand = player_hand
         game_session.dealer_hand = dealer_hand
         game_session.player_score = calculate_score(player_hand)
-        game_session.dealer_score = calculate_score([dealer_hand[0]])  # Hide dealer's second card
+        game_session.dealer_score = calculate_score([dealer_hand[0]]) 
         game_session.save()
         
-        # Check for blackjack
         if game_session.player_score == 21:
             game_session.status = 'win'
             game_session.balance += int(game_session.bet_amount * 1.5)
@@ -105,7 +100,7 @@ def start_game(request):
                 'status': 'win',
                 'message': 'Blackjack !',
                 'player_hand': game_session.player_hand,
-                'dealer_hand': dealer_hand,  # Reveal all cards
+                'dealer_hand': dealer_hand,
                 'player_score': game_session.player_score,
                 'dealer_score': calculate_score(dealer_hand),
                 'balance': game_session.balance,
@@ -114,7 +109,7 @@ def start_game(request):
         return JsonResponse({
             'status': 'active',
             'player_hand': game_session.player_hand,
-            'dealer_hand': [game_session.dealer_hand[0], '?'],  # Hide second card
+            'dealer_hand': [game_session.dealer_hand[0], '?'],  
             'player_score': game_session.player_score,
             'dealer_score': game_session.dealer_score,
             'balance': game_session.balance,
@@ -143,18 +138,16 @@ def hit(request):
         data = json.loads(request.body)
         game_id = int(data.get('game_id'))
         
-        # Verify user owns this game
         game_session = GameSession.objects.get(id=game_id, user=user)
         
         if game_session.status != 'active':
             return JsonResponse({'error': 'Le jeu est terminé'}, status=400)
         
-        # Draw a card
         new_card = random.choice(DECK)
         game_session.player_hand.append(new_card)
         game_session.player_score = calculate_score(game_session.player_hand)
         
-        # Check for bust
+
         if game_session.player_score > 21:
             game_session.status = 'loss'
             game_session.balance -= game_session.bet_amount
@@ -201,13 +194,12 @@ def stand(request):
         data = json.loads(request.body)
         game_id = int(data.get('game_id'))
         
-        # Verify user owns this game
         game_session = GameSession.objects.get(id=game_id, user=user)
         
         if game_session.status != 'active':
             return JsonResponse({'error': 'Le jeu est terminé'}, status=400)
         
-        # Dealer plays
+
         dealer_hand = game_session.dealer_hand[:]
         while calculate_score(dealer_hand) < 17:
             dealer_hand.append(random.choice(DECK))
@@ -215,7 +207,7 @@ def stand(request):
         player_score = game_session.player_score
         dealer_score = calculate_score(dealer_hand)
         
-        # Determine winner
+
         if dealer_score > 21:
             status = 'win'
             game_session.balance += game_session.bet_amount
@@ -270,10 +262,9 @@ def reset_game(request):
         if not user:
             return JsonResponse({'error': 'Utilisateur non trouvé'}, status=404)
         
-        # Delete old game session
+
         GameSession.objects.filter(user=user).delete()
         
-        # Create new game
         game_session = GameSession.objects.create(
             user=user,
             bet_amount=10,

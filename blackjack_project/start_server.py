@@ -7,7 +7,6 @@ import sys
 import ssl
 from pathlib import Path
 
-# Setup Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blackjack_project.settings')
 
 import django
@@ -41,14 +40,12 @@ def main():
     print("="*70 + "\n")
     
     try:
-        # Create SSL context
+
         ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
         ssl_context.load_cert_chain(str(cert_file), str(key_file))
         
-        # Get WSGI application
         app = get_wsgi_application()
         
-        # Run with Werkzeug
         run_simple(
             'localhost',
             8000,

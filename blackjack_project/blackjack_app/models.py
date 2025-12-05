@@ -10,7 +10,7 @@ class User(models.Model):
     
     email = models.EmailField(unique=True, max_length=254)
     name = models.CharField(max_length=255)
-    password_hash = models.CharField(max_length=255)  # Bcrypt hash
+    password_hash = models.CharField(max_length=255)  
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -49,7 +49,7 @@ class GameSession(models.Model):
     dealer_hand = models.JSONField(default=list)
     player_score = models.IntegerField(default=0)
     dealer_score = models.IntegerField(default=0)
-    status = models.CharField(max_length=20, default='active')  # active, win, loss, draw
+    status = models.CharField(max_length=20, default='active') 
     bet_amount = models.IntegerField(default=10)
     balance = models.IntegerField(default=1000)
     created_at = models.DateTimeField(auto_now_add=True)

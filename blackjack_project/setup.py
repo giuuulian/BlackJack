@@ -6,7 +6,6 @@ import os
 import sys
 import django
 
-# Setup Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blackjack_project.settings')
 django.setup()
 
@@ -27,7 +26,7 @@ def create_admin_user():
     admin_name = 'Administrateur'
     admin_password = 'Admin123!@#'
     
-    # Check if admin already exists
+
     if User.objects.filter(email=admin_email).exists():
         print(f"✓ Utilisateur admin déjà présent: {admin_email}")
         return
@@ -48,7 +47,6 @@ def create_test_user():
     test_name = 'Utilisateur Test'
     test_password = 'User123!@#'
     
-    # Check if user already exists
     if User.objects.filter(email=test_email).exists():
         print(f"✓ Utilisateur test déjà présent: {test_email}")
         return

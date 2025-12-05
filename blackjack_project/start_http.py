@@ -44,14 +44,12 @@ def run_https_server():
     print("="*70 + "\n")
     
     try:
-        # Try using runserver_plus from django-extensions if available
         try:
             call_command('runserver_plus', '127.0.0.1:8000', 
                         use_ssl=True, 
                         ssl_certfile=str(cert_file),
                         ssl_keyfile=str(key_file))
         except:
-            # Fallback: Use werkzeug with SSL context
             from django.core.wsgi import get_wsgi_application
             from werkzeug.serving import run_simple
             

@@ -9,7 +9,7 @@ import django
 from pathlib import Path
 from django.core.management import call_command
 
-# Setup Django
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blackjack_project.settings')
 django.setup()
 
@@ -54,12 +54,11 @@ def run_https_server():
     print("Appuyez sur Ctrl+C pour arrêter le serveur.")
     print("="*70 + "\n")
     
-    # Try using Werkzeug SSL with django runserver
+    
     try:
         from werkzeug.serving import WSGIRequestHandler
         from django.core.wsgi import get_wsgi_application
         
-        # Generate certs
         if not generate_certificates():
             print("Impossible de générer les certificats. Démarrage en HTTP...")
             call_command('runserver', '127.0.0.1:8000')
@@ -69,7 +68,6 @@ def run_https_server():
         key_file = Path('certs/localhost.key')
         
         if cert_file.exists() and key_file.exists():
-            # Use ssl_context
             import ssl
             ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
             ssl_context.load_cert_chain(str(cert_file), str(key_file))
@@ -77,7 +75,6 @@ def run_https_server():
             app = get_wsgi_application()
             WSGIRequestHandler.ssl_context = ssl_context
             
-            # Run with ssl
             from werkzeug.serving import run_simple
             run_simple('localhost', 8000, app, ssl_context='adhoc', use_reloader=True, 
                       use_debugger=True, threaded=True)
@@ -91,8 +88,6 @@ def run_https_server():
 
 if __name__ == '__main__':
     try:
-        # Simple approach: just run standard runserver which now uses HTTP
-        # But Django will handle the HTTPS redirect in views
         call_command('runserver', '127.0.0.1:8000')
     except KeyboardInterrupt:
         print("\n\n✓ Serveur arrêté.")

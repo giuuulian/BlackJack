@@ -74,7 +74,6 @@
 <script>
 let currentGameId = null;
 
-// Get CSRF token from cookie
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -92,7 +91,6 @@ function getCookie(name) {
 
 const csrftoken = getCookie('csrftoken');
 
-// Display cards
 function displayCards(containerId, cards, hideFirst = false) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
@@ -114,7 +112,6 @@ function displayCards(containerId, cards, hideFirst = false) {
     });
 }
 
-// Start game
 document.getElementById('startBtn').addEventListener('click', async () => {
     const betAmount = parseInt(document.getElementById('betAmount').value);
     
@@ -143,15 +140,12 @@ document.getElementById('startBtn').addEventListener('click', async () => {
         currentGameId = data.game_id;
         updateGame(data);
         
-        // Show action buttons, hide start button
         document.getElementById('bettingSection').classList.add('d-none');
         document.getElementById('actionButtons').classList.remove('d-none');
         document.getElementById('newGameBtn').classList.add('d-none');
         
-        // Update balance
         document.getElementById('balance').textContent = data.balance;
         
-        // Check for immediate win
         if (data.status === 'win') {
             displayCards('dealerHand', data.dealer_hand);
             showStatus('Blackjack ! Vous avez gagné !', 'success');
@@ -164,7 +158,6 @@ document.getElementById('startBtn').addEventListener('click', async () => {
     }
 });
 
-// Hit button
 document.getElementById('hitBtn').addEventListener('click', async () => {
     try {
         const response = await fetch('{% url "blackjack_app:api_hit" %}', {
@@ -186,7 +179,7 @@ document.getElementById('hitBtn').addEventListener('click', async () => {
         updateGame(data);
         
         if (data.status === 'loss') {
-            displayCards('dealerHand', []); // Hide dealer cards
+            displayCards('dealerHand', []); 
             showStatus('Vous avez dépassé 21. Vous avez perdu !', 'danger');
             document.getElementById('actionButtons').classList.add('d-none');
             document.getElementById('newGameBtn').classList.remove('d-none');
@@ -197,7 +190,6 @@ document.getElementById('hitBtn').addEventListener('click', async () => {
     }
 });
 
-// Stand button
 document.getElementById('standBtn').addEventListener('click', async () => {
     try {
         const response = await fetch('{% url "blackjack_app:api_stand" %}', {
@@ -236,7 +228,6 @@ document.getElementById('standBtn').addEventListener('click', async () => {
         document.getElementById('actionButtons').classList.add('d-none');
         document.getElementById('newGameBtn').classList.remove('d-none');
         
-        // Display dealer cards
         displayCards('dealerHand', data.dealer_hand);
     } catch (error) {
         console.error('Erreur:', error);
@@ -244,12 +235,10 @@ document.getElementById('standBtn').addEventListener('click', async () => {
     }
 });
 
-// New game button
 document.getElementById('newGameBtn').addEventListener('click', () => {
     location.reload();
 });
 
-// Update game display
 function updateGame(data) {
     displayCards('playerHand', data.player_hand);
     displayCards('dealerHand', data.dealer_hand, data.status === 'active');
@@ -258,7 +247,6 @@ function updateGame(data) {
     document.getElementById('balance').textContent = data.balance;
 }
 
-// Show status message
 function showStatus(message, alertClass) {
     const statusArea = document.getElementById('statusArea');
     statusArea.innerHTML = `<div class="alert alert-${alertClass} alert-dismissible fade show" role="alert">
